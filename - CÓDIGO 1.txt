@@ -1,0 +1,280 @@
+- CÓDIGO 1
+function clearDataBS() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var bsSheet = ss.getSheetByName("BS");
+  var rangeToClear = bsSheet.getRange("AD:AZ");
+  rangeToClear.clearContent();
+}
+- CÓDIGO 2
+function copyPasteum() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName("BS");
+
+  var rangeToCopy = sheet.getRange("B:X");
+  var valuesToCopy = rangeToCopy.getValues();
+
+  var rangeToPaste = sheet.getRange(1, 30, valuesToCopy.length, valuesToCopy[0].length);
+  rangeToPaste.setValues(valuesToCopy);
+}
+- CÓDIGO 3
+function copyPastedois() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var bsSheet = ss.getSheetByName("BS");
+  var dtlSheet = ss.getSheetByName("DTL");
+  var rangeToCopy = bsSheet.getRange("AC1:AC").getValues();
+  dtlSheet.getRange(1,1,rangeToCopy.length,1).setValues(rangeToCopy);
+}
+- CÓDIGO 4
+function executeFormula() {
+  // Obter a planilha ativa
+  var spreadsheet = SpreadsheetApp.getActive();
+
+  // Obter a Aba DTL
+  var sheet = spreadsheet.getSheetByName("DTL");
+
+  // Desativar o cálculo automático de fórmulas
+  spreadsheet.setSpreadsheetLocale('en');
+  spreadsheet.setRecalculationInterval(SpreadsheetApp.RecalculationInterval.ON_CHANGE);
+
+  // Obter os valores da coluna A e B
+  var rangeToCheck = sheet.getRange("A2:B");
+  var valuesToCheck = rangeToCheck.getValues();
+
+  var formulas = [];
+  for (var i = 0; i < valuesToCheck.length; i++) {
+    var row = valuesToCheck[i];
+
+    // Verificar se a célula da coluna A contém um valor
+    if (row[0]) {
+      // Executar a fórmula na célula da coluna B correspondente
+      var formula = '=vlookup(A' + (i+2) + ';BS!AC:AD;2;0)';
+      formulas.push([formula]);
+    }
+  }
+
+  // Atualizar os valores em lotes
+  var rangeToUpdate = sheet.getRange(2, 2, formulas.length, 1);
+  rangeToUpdate.setFormulas(formulas);
+
+  // Obter os resultados das fórmulas e atualizar os valores correspondentes em lotes
+  var results = rangeToUpdate.getValues();
+  rangeToUpdate.setValues(results);
+
+  // Reativar o cálculo automático de fórmulas
+  spreadsheet.setRecalculationInterval(SpreadsheetApp.RecalculationInterval.MINUTE);
+}
+
+-CÓDIGO 5
+function executeFormuladois() {
+  // Obter a planilha ativa
+  var spreadsheet = SpreadsheetApp.getActive();
+
+  // Obter a Aba DTL
+  var sheet = spreadsheet.getSheetByName("DTL");
+
+  // Desativar o cálculo automático de fórmulas
+  spreadsheet.setSpreadsheetLocale('en');
+  spreadsheet.setRecalculationInterval(SpreadsheetApp.RecalculationInterval.ON_CHANGE);
+
+  // Obter os valores da coluna A
+  var rangeToCheck = sheet.getRange("A2:A");
+  var valuesToCheck = rangeToCheck.getValues();
+
+  var formulas = [];
+  for (var i = 0; i < valuesToCheck.length; i++) {
+    var row = valuesToCheck[i];
+
+    // Verificar se a célula da coluna A contém um valor
+    if (row[0]) {
+      // Executar a fórmula na célula da coluna B correspondente
+      var formula = '=vlookup(A' + (i+2) + ';BS!AC:AZ;24;0)';
+      formulas.push([formula]);
+    }
+  }
+
+  // Atualizar os valores em lotes
+  var rangeToUpdate = sheet.getRange(2, 3, formulas.length, 1);
+  rangeToUpdate.setFormulas(formulas);
+
+  // Obter os resultados das fórmulas e atualizar os valores correspondentes em lotes
+  var results = rangeToUpdate.getValues();
+  rangeToUpdate.setValues(results);
+
+  // Reativar o cálculo automático de fórmulas
+  spreadsheet.setRecalculationInterval(SpreadsheetApp.RecalculationInterval.MINUTE);
+}
+
+-CÓDIGO 6
+function replaceTextInColumnC() {
+  // Obter a planilha ativa
+  var spreadsheet = SpreadsheetApp.getActive();
+  
+  // Obter a Aba DTL
+  var sheet = spreadsheet.getSheetByName("DTL");
+  
+  // Obter os valores da coluna C
+  var rangeToCheck = sheet.getRange("C:C");
+  var valuesToCheck = rangeToCheck.getValues();
+  
+  // Criar uma nova matriz com os valores atualizados
+  var newValues = valuesToCheck.map(function(row) {
+    if (row[0] === "Cadastro não encontrado no banco de dados!") {
+      return ["ANTECIPAÇÃO"];
+    } else {
+      return row;
+    }
+  });
+  
+  // Atualizar a coluna C com a nova matriz
+  sheet.getRange("C:C").setValues(newValues);
+}
+-CÓDIGO 7
+function copyValuesToColumnD() {
+  var spreadsheet = SpreadsheetApp.getActive();
+  var sheet = spreadsheet.getSheetByName("DTL");
+  var range = sheet.getRange("C2:C" + sheet.getLastRow());
+  var values = range.getValues();
+  var outputValues = [];
+
+  // Objeto de mapeamento
+  var mapping = {
+    "ANTECIPAÇÃO": "ANT",
+    "VINICIUS SCARPELLI": "LOJA",
+    "MARCIA B PERASSOLI": "LOJA",
+    "IRACEMA TEODORO": "BT",
+    "INGRID MONIQUE": "BT",
+    "RAFAELA": "BT",
+    "BRUNA SIMONATO": "REAB",
+    "VICTOR VILAR": "CLIN"
+  };
+
+  for (var i = 0; i < values.length; i++) {
+    var value = values[i][0];
+    var outputValue = mapping[value] || "";
+
+    outputValues.push([outputValue]);
+  }
+
+  var outputRange = sheet.getRange(2, 4, outputValues.length, 1);
+  outputRange.setValues(outputValues);
+}
+
+-CÓDIGO 8
+function checkPaymentMethod() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var dtlSheet = ss.getSheetByName("DTL");
+  var bsSheet = ss.getSheetByName("BS");
+
+  // Obter os valores da coluna A da aba DTL
+  var rangeToCheck = dtlSheet.getRange("A2:A");
+  var valuesToCheck = rangeToCheck.getValues();
+  
+  // Obter todos os valores da aba BS de uma vez
+  var bsValues = bsSheet.getDataRange().getValues();
+  
+  // Mapear cada valor da coluna AC a uma linha na planilha
+  var bsIndex = bsValues.reduce(function(map, row, index) {
+    map[row[28]] = index;
+    return map;
+  }, {});
+  
+  // Mapear cada coluna da aba BS a um método de pagamento
+  var paymentMethods = {
+    0: "DIN",
+    1: "CHE",
+    2: "DEB",
+    3: "CRE",
+    4: "PIX",
+    5: "CON",
+    6: "VAL"
+  };
+  
+  // Obter os valores das colunas AI a AO da aba BS
+  var bsPaymentValues = bsValues.map(function(row) {
+    return row.slice(34, 41);
+  });
+  
+  for (var i = 0; i < valuesToCheck.length; i++) {
+    var row = valuesToCheck[i];
+    
+    // Verificar se a célula da coluna A contém um valor
+    if (row[0]) {
+      var searchValue = row[0];
+      
+      // Procurar o valor da coluna A na coluna AC da aba BS
+      var rowIndex = bsIndex[searchValue];
+      
+      if (rowIndex >= 0) {
+        // Encontrou o valor na coluna AC da aba BS
+        var method = "";
+        
+        // Verificar qual coluna tem valor maior que 0
+        var bsRow = bsPaymentValues[rowIndex];
+        var paymentIndex = bsRow.findIndex(function(value) {
+          return value > 0;
+        });
+        
+        if (paymentIndex >= 0) {
+          method = paymentMethods[paymentIndex];
+        }
+        
+        // Preencher o método de pagamento na coluna E da aba DTL
+        dtlSheet.getRange(i+2, 5).setValue(method);
+      }
+    }
+  }
+}
+
+-CÓDIGO 9
+function checkPaymentValue() {
+var ss = SpreadsheetApp.getActiveSpreadsheet();
+var dtlSheet = ss.getSheetByName("DTL");
+var bsSheet = ss.getSheetByName("BS");
+
+// Obter os valores da coluna A da aba DTL
+var rangeToCheck = dtlSheet.getRange("A2:A");
+var valuesToCheck = rangeToCheck.getValues();
+
+// Obter todos os valores da aba BS de uma vez
+var bsValues = bsSheet.getDataRange().getValues();
+
+// Mapear cada valor da coluna AC a uma linha na planilha
+var bsIndex = bsValues.reduce(function(map, row, index) {
+map[row[28]] = index;
+return map;
+}, {});
+
+for (var i = 0; i < valuesToCheck.length; i++) {
+var row = valuesToCheck[i];
+// Verificar se a célula da coluna A contém um valor
+if (row[0]) {
+  var searchValue = row[0];
+
+  // Procurar o valor da coluna A na coluna AC da aba BS
+  var rowIndex = bsIndex[searchValue];
+
+  if (rowIndex >= 0) {
+    // Encontrou o valor na coluna AC da aba BS
+    var method = bsValues[rowIndex][43]; //Obter o valor da coluna AR
+
+    // Preencher o método de pagamento na coluna F da aba DTL
+    dtlSheet.getRange(i+2, 6).setValue(method);
+  }
+}
+}
+}
+-CÓDIGO 10
+
+function filterDTL() 
+{
+  clearDataBS();
+  copyPasteum();
+  copyPastedois();
+  executeFormula();
+  executeFormuladois();
+  replaceTextInColumnC();
+  copyValuesToColumnD();
+  checkPaymentMethod();
+  checkPaymentValue();
+  clearDataBS();
+}
